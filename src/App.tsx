@@ -1,8 +1,11 @@
-import {useEffect, useState} from 'react';
-import axios from 'axios';
-import {OperationForm} from './components/OperationForm.tsx';
-import {callApi, Operation} from './helpers/Api.ts';
-
+import { useEffect, useState } from 'react';
+import { OperationForm } from './components/OperationForm.tsx';
+import {
+    callTasksApi,
+    getOperationsApi,
+    getTasksApi,
+    Operation,
+} from './helpers/Api.ts';
 
 export interface TaskStatus {
     status: 'open' | 'closed';
@@ -23,50 +26,45 @@ function App() {
     const [activeTaskId, setActiveTaskId] = useState<number | null>(null);
 
     useEffect(() => {
-        const responses = Promise.all([getDataApi('tasks'), getDataApi('operations')]);
+        const responses = Promise.all([getTasksApi(), getOperationsApi()]);
 
-        responses.then((data) => {
+        responses.then(data => {
             const [tasks, operations] = data;
 
-            setTasks(tasks.map((task) => ({
-                ...task,
-                operations:
-                    operations.filter((operation) => operation.taskId === task.id);
-            }))
-        })
+            setTasks(
+                tasks.map(task => ({
+                    ...task,
+                    operations: operations.filter(
+                        operation => operation.taskId === task.id
+                    ),
+                }))
+            );
+        });
 
         // getTasksApi('tasks').then((data) =>
         //     setTasks(data.map((task) => ({...task, operations: []}))));
     }, []);
 
-    async function getDataApi(endpoint: string): Promise<Task[] | Operation[]> {
-        const response = await axios.get<Task[] | Operation[]>(
-            `http://localhost:3000/${endpoint}`
-        );
-        return response.data;
-    }
-
     async function handleSubmit() {
-        const data = await callApi({
+        const data = await callTasksApi({
             data: {
                 addedDate: new Date(),
                 description,
                 name,
                 status: 'open',
             },
-            endpoint: 'tasks',
             method: 'post',
         });
-        setTasks([...tasks, {...data, operations: []}]);
+        setTasks([...tasks, { ...data, operations: [] }]);
         setName('');
         setDescription('');
     }
 
     function handleFinishTask(task: Task) {
         return async function () {
-            await callApi({
-                endpoint: `tasks/${task.id}`,
-                data: {status: 'closed'},
+            await callTasksApi({
+                id: task.id,
+                data: { status: 'closed' },
                 method: 'patch',
             });
 
@@ -77,8 +75,8 @@ function App() {
 
     function handleDeleteTask(id: number) {
         return async function () {
-            await callApi({
-                endpoint: `tasks/${id}`,
+            await callTasksApi({
+                id,
                 method: 'delete',
             });
 
@@ -136,15 +134,15 @@ function App() {
                                 setTasks={setTasks}
                             />
                         )}
+                        <div>
+                            {task.operations.map((operation: Operation) => (
+                                <div key={operation.id}>
+                                    {operation.description}{' '}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 ))}
-                <div>
-                    {tasks.operations.map((operation: Operation) => {
-                        (<div key={operation.id}>
-                            {operation.description}{' '}
-                        </div>)
-                    }}
-                </div>
             </div>
         </>
     );

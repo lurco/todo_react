@@ -1,5 +1,5 @@
 import {Dispatch, FormEvent, SetStateAction, useState} from 'react';
-import {callApi, Operation} from '../helpers/Api.ts';
+import {callOperationsApi, Operation} from '../helpers/Api.ts';
 import {Task} from "../App.tsx";
 import React from "react";
 
@@ -12,17 +12,16 @@ interface OperationFormProps {
 export function OperationForm({onCancel, taskId, setTasks}: OperationFormProps) {
     const [value, setValue] = useState('');
 
-    async function handleAddOperation(event: FormEvent) {
+    async function handleAddOperation(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        const operation: Operation = await callApi({
+        const operation: Operation = await callOperationsApi({
             data: {
                 description: value,
                 addedDate: new Date(),
                 spentTime: 0,
                 taskId,
             },
-            endpoint: 'operations',
             method: 'post',
         });
 
