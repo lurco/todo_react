@@ -28,7 +28,36 @@
       "name": "asaff",
       "status": "open",
       "id": 6
+    },
+    {
+      "addedDate": "2023-04-29T06:24:51.748Z",
+      "description": "efe\n",
+      "name": "wef",
+      "status": "open",
+      "id": 7
     }
   ],
-  "operations": []
+  "operations": [
+    {
+      "description": "efef",
+      "addedDate": "2023-04-29T06:46:53.268Z",
+      "spentTime": 0,
+      "taskId": 7,
+      "id": 1
+    },
+    {
+      "description": "ef",
+      "addedDate": "2023-04-29T06:47:05.530Z",
+      "spentTime": 0,
+      "taskId": 7,
+      "id": 2
+    },
+    {
+      "description": "wefw",
+      "addedDate": "2023-04-29T06:56:26.753Z",
+      "spentTime": 0,
+      "taskId": 6,
+      "id": 3
+    }
+  ]
 }
