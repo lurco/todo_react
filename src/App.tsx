@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { OperationForm } from './components/OperationForm.tsx';
 import {
+    callOperationsApi,
     callTasksApi,
     getOperationsApi,
     getTasksApi,
     Operation,
 } from './helpers/Api.ts';
+import SpentTimeForm from './components/SpentTimeForm.tsx';
 
 export interface TaskStatus {
     status: 'open' | 'closed';
@@ -24,6 +26,9 @@ function App() {
     const [description, setDescription] = useState('');
     const [tasks, setTasks] = useState<Task[]>([]);
     const [activeTaskId, setActiveTaskId] = useState<number | null>(null);
+    const [activeOperationId, setActiveOperationId] = useState<number | null>(
+        null
+    );
 
     useEffect(() => {
         const responses = Promise.all([getTasksApi(), getOperationsApi()]);
@@ -124,9 +129,7 @@ function App() {
                                 </button>
                             </>
                         )}
-                        <button onClick={handleDeleteTask(task.id)}>
-                            Delete
-                        </button>
+                        <button onClick={handleDeleteTask(task)}>Delete</button>
                         {activeTaskId === task.id && (
                             <OperationForm
                                 taskId={task.id}
@@ -138,6 +141,17 @@ function App() {
                             {task.operations.map((operation: Operation) => (
                                 <div key={operation.id}>
                                     {operation.description}{' '}
+                                    {operation.spentTime}
+                                    {activeOperationId === operation.id ? (
+                                        <SpentTimeForm
+                                            operation={operation}
+                                            setTasks={setTasks}
+                                            onCancel={setActiveOperationId}
+                                        ></SpentTimeForm>
+                                    ) : (
+                                        <button onClick={() => setActiveOperationId(operation.id)}>Add spend time</button>
+                                    )}
+                                    <button>Delete</button>
                                 </div>
                             ))}
                         </div>
